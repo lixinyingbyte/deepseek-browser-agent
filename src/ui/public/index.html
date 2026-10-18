@@ -1,0 +1,329 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>DeepSeek Agent — Console</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Noto+Sans+SC:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css" />
+<link rel="stylesheet" href="themes.css" />
+<script>
+// Apply the saved theme/background before first paint to avoid a color flash.
+(function () {
+  try {
+    var t = localStorage.getItem('dsa-ui-theme') || 'sakura';
+    var b = localStorage.getItem('dsa-ui-bg') || 'aurora';
+    document.documentElement.setAttribute('data-theme', t);
+    document.documentElement.setAttribute('data-bg', b);
+  } catch (e) { /* localStorage disabled */ }
+})();
+</script>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E🤖%3C/text%3E%3C/svg%3E">
+</head>
+<body>
+
+<!-- Decorative background blobs -->
+<div class="bg-blobs" aria-hidden="true">
+  <div class="blob blob-1"></div>
+  <div class="blob blob-2"></div>
+  <div class="blob blob-3"></div>
+</div>
+
+<!-- ───────────────────────────── Header ───────────────────────────── -->
+<header class="topbar">
+  <div class="brand">
+    <div class="brand-mark">🤖</div>
+    <div class="brand-text">
+      <h1>DeepSeek Agent</h1>
+      <span data-i18n="brand.subtitle">AI Coding Agent · Browser Automation</span>
+    </div>
+  </div>
+
+  <div class="topbar-right">
+    <div class="status-pill" id="statusPill" data-status="idle">
+      <span class="dot"></span>
+      <span class="label" id="statusLabel" data-i18n="status.idle">Idle</span>
+    </div>
+
+    <button class="btn btn-ghost btn-theme" id="themeBtn" data-i18n-title="topbar.theme" title="Theme &amp; background" aria-haspopup="true" aria-expanded="false">
+      <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="13.5" cy="6.5" r="1.5"/><circle cx="17.5" cy="10.5" r="1.5"/><circle cx="8.5" cy="7.5" r="1.5"/><circle cx="6.5" cy="12.5" r="1.5"/><path d="M12 2a10 10 0 0 0 0 20 2.5 2.5 0 0 0 2.5-2.5c0-.7-.3-1.3-.7-1.8-.4-.4-.6-1-.6-1.6a2.5 2.5 0 0 1 2.5-2.5H18a4 4 0 0 0 4-4 10 10 0 0 0-10-10z"/></svg>
+      <span data-i18n="topbar.theme">Theme</span>
+    </button>
+
+    <button class="btn btn-ghost btn-lang" id="langBtn" data-i18n-title="topbar.lang.toggle" title="Switch to Chinese">
+      <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+      <span class="lang-label">中</span>
+    </button>
+
+    <button class="btn btn-ghost" id="accountsBtn" data-i18n-title="topbar.accounts" title="Accounts">
+      <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+      <span data-i18n="topbar.accounts">Accounts</span>
+    </button>
+    <button class="btn btn-ghost" id="historyBtn" data-i18n-title="topbar.history" title="Past conversations">
+      <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v5h5"/><path d="M3.05 13A9 9 0 1 0 6 5.3L3 8"/><path d="M12 7v5l4 2"/></svg>
+      <span data-i18n="topbar.history">History</span>
+    </button>
+    <button class="btn btn-ghost" id="toolsBtn" data-i18n-title="topbar.tools" title="View available tools">
+      <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
+      <span data-i18n="topbar.tools">Tools</span>
+    </button>
+    <button class="btn btn-ghost" id="settingsBtn" data-i18n-title="topbar.settings" title="Settings">
+      <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+      <span data-i18n="topbar.settings">Settings</span>
+    </button>
+  </div>
+</header>
+
+<!-- ───────────────────────────── Main layout ───────────────────────────── -->
+<main class="layout">
+
+  <!-- Workspace column (left) -->
+  <aside class="workspace-col" id="workspaceCol">
+    <div class="panel-header">
+      <h3 data-i18n="workspace.title">Workspace</h3>
+      <div class="panel-header-actions">
+        <button class="icon-btn" id="workspaceRefresh" data-i18n-title="workspace.refresh" title="Refresh files">
+          <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>
+        </button>
+      </div>
+    </div>
+    <div class="workspace-root" id="workspaceRoot" title=""></div>
+    <div class="workspace-tree" id="workspaceTree">
+      <div class="workspace-empty" id="workspaceEmpty">
+        <p data-i18n="workspace.loading">Loading files…</p>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Chat column -->
+  <section class="chat-col">
+    <div class="chat-scroll" id="chatScroll">
+      <div class="chat-messages" id="chatMessages">
+        <!-- Welcome -->
+        <div class="welcome" id="welcome">
+          <div class="welcome-icon">✨</div>
+          <h2 data-i18n="welcome.title">Welcome to your AI coding agent</h2>
+          <p data-i18n="welcome.desc">Describe what you want to build. The agent will use DeepSeek through browser automation to plan, edit files, and run commands — all without an API key.</p>
+          <div class="suggestions" id="suggestions">
+            <button class="suggestion" data-i18n-task="sugg.restapi.task" data-task="Create a REST API in Express with CRUD endpoints for users">
+              <span class="s-icon">🛠️</span>
+              <div>
+                <b data-i18n="sugg.restapi.title">Build a REST API</b>
+                <small data-i18n="sugg.restapi.sub">Express + CRUD for users</small>
+              </div>
+            </button>
+            <button class="suggestion" data-i18n-task="sugg.darkmode.task" data-task="Add a dark mode toggle to the frontend using CSS variables and localStorage">
+              <span class="s-icon">🌗</span>
+              <div>
+                <b data-i18n="sugg.darkmode.title">Add a dark mode toggle</b>
+                <small data-i18n="sugg.darkmode.sub">CSS variables + localStorage</small>
+              </div>
+            </button>
+            <button class="suggestion" data-i18n-task="sugg.tests.task" data-task="Write unit tests for the existing modules using Jest and make them pass">
+              <span class="s-icon">🧪</span>
+              <div>
+                <b data-i18n="sugg.tests.title">Write unit tests</b>
+                <small data-i18n="sugg.tests.sub">Jest, all passing</small>
+              </div>
+            </button>
+            <button class="suggestion" data-i18n-task="sugg.typescript.task" data-task="Refactor the project to use TypeScript with strict mode enabled">
+              <span class="s-icon">📘</span>
+              <div>
+                <b data-i18n="sugg.typescript.title">Migrate to TypeScript</b>
+                <small data-i18n="sugg.typescript.sub">Strict mode refactor</small>
+              </div>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Composer -->
+    <div class="composer-wrap">
+      <div class="composer">
+        <textarea
+          id="taskInput"
+          data-i18n-placeholder="composer.placeholder"
+          placeholder="Describe a task…  (Enter to send, Shift+Enter for newline)"
+          rows="1"
+          autocomplete="off"
+        ></textarea>
+
+        <div class="composer-actions">
+          <label class="toggle" data-i18n-title="composer.keepSession.tip" title="Reuse the previous DeepSeek conversation">
+            <input type="checkbox" id="keepSession" />
+            <span class="track"><span class="thumb"></span></span>
+            <span class="toggle-label" data-i18n="composer.keepSession">Keep session</span>
+          </label>
+
+          <button class="btn btn-primary" id="sendBtn" disabled>
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+            <span data-i18n="composer.send">Send</span>
+          </button>
+        </div>
+      </div>
+      <div class="composer-hint">
+        <span id="hintWorkingDir"></span>
+      </div>
+    </div>
+  </section>
+
+  <!-- Activity column -->
+  <aside class="activity-col">
+    <div class="panel-header">
+      <h3 data-i18n="activity.title">Activity</h3>
+      <div class="panel-header-actions">
+        <span class="counter" id="activityCount">0</span>
+        <button class="icon-btn" id="clearActivity" data-i18n-title="activity.clear" title="Clear activity">
+          <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6M14 11v6"/></svg>
+        </button>
+      </div>
+    </div>
+
+    <div class="activity-list" id="activityList">
+      <div class="activity-empty" id="activityEmpty">
+        <svg viewBox="0 0 24 24" width="32" height="32" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+        <p data-i18n="activity.empty">Activity will stream here</p>
+      </div>
+    </div>
+  </aside>
+</main>
+
+<!-- ───────────────────────────── Modals ───────────────────────────── -->
+<div class="modal-backdrop" id="settingsModal">
+  <div class="modal">
+    <div class="modal-header">
+      <h2 data-i18n="settings.title">Settings</h2>
+      <button class="icon-btn" data-close-modal="settingsModal">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-row">
+        <label for="cfgWorkingDir" data-i18n="settings.workingDir">Working directory</label>
+        <input type="text" id="cfgWorkingDir" placeholder="D:\\projects\\my-app" />
+        <small data-i18n="settings.workingDir.hint">The folder the agent reads and writes.</small>
+      </div>
+      <div class="form-row">
+        <label for="cfgMaxIter" data-i18n="settings.maxIter">Max iterations</label>
+        <input type="number" id="cfgMaxIter" min="1" max="200" />
+        <small data-i18n="settings.maxIter.hint">Upper bound on agent steps per task.</small>
+      </div>
+      <div class="form-row form-row-inline">
+        <label class="toggle">
+          <input type="checkbox" id="cfgHeadless" />
+          <span class="track"><span class="thumb"></span></span>
+          <span class="toggle-label" data-i18n="settings.headless">Headless browser</span>
+        </label>
+        <label class="toggle">
+          <input type="checkbox" id="cfgDebug" />
+          <span class="track"><span class="thumb"></span></span>
+          <span class="toggle-label" data-i18n="settings.debug">Debug logging</span>
+        </label>
+      </div>
+
+      <!-- Token usage (estimated) -->
+      <div class="form-row token-usage">
+        <label data-i18n="settings.tokens.title">Today's token usage</label>
+        <div class="token-grid" id="tokenGrid">
+          <div class="token-cell">
+            <span class="token-num" id="tokTodayTotal">—</span>
+            <span class="token-cap" data-i18n="settings.tokens.total">Total</span>
+          </div>
+          <div class="token-cell">
+            <span class="token-num" id="tokTodayInput">—</span>
+            <span class="token-cap" data-i18n="settings.tokens.input">Input</span>
+          </div>
+          <div class="token-cell">
+            <span class="token-num" id="tokTodayOutput">—</span>
+            <span class="token-cap" data-i18n="settings.tokens.output">Output</span>
+          </div>
+          <div class="token-cell">
+            <span class="token-num" id="tokTodayTasks">—</span>
+            <span class="token-cap" data-i18n="settings.tokens.tasks">Tasks</span>
+          </div>
+        </div>
+        <small data-i18n="settings.tokens.hint">Estimated from conversation text — DeepSeek's web UI does not expose exact counts.</small>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" data-close-modal="settingsModal" data-i18n="settings.cancel">Cancel</button>
+      <button class="btn btn-primary" id="saveSettingsBtn" data-i18n="settings.save">Save</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-backdrop" id="accountsModal">
+  <div class="modal">
+    <div class="modal-header">
+      <h2 data-i18n="accounts.title">Accounts</h2>
+      <button class="icon-btn" data-close-modal="accountsModal">✕</button>
+    </div>
+    <div class="modal-body" id="accountsBody">
+      <div class="loading-line"><span class="spin"></span> <span data-i18n="accounts.loading">Loading accounts…</span></div>
+    </div>
+    <div class="modal-footer" style="gap:8px;flex-wrap:wrap">
+      <input type="text" id="newAccountName" data-i18n-placeholder="accounts.addPlaceholder" placeholder="New account name" style="flex:1;min-width:140px" />
+      <button class="btn btn-ghost" id="addAccountBtn" data-i18n="accounts.add">Add</button>
+      <button class="btn btn-primary" id="rotateAccountBtn" data-i18n="accounts.rotate">Rotate to next</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-backdrop" id="historyModal">
+  <div class="modal modal-wide">
+    <div class="modal-header">
+      <h2 data-i18n="history.title">Conversation History</h2>
+      <button class="icon-btn" data-close-modal="historyModal">✕</button>
+    </div>
+    <div class="modal-body" id="historyBody">
+      <div class="loading-line"><span class="spin"></span> <span data-i18n="history.loading">Loading conversations…</span></div>
+    </div>
+  </div>
+</div>
+
+<div class="modal-backdrop" id="toolsModal">
+  <div class="modal modal-wide">
+    <div class="modal-header">
+      <h2 data-i18n="tools.title">Available Tools</h2>
+      <button class="icon-btn" data-close-modal="toolsModal">✕</button>
+    </div>
+    <div class="modal-body" id="toolsBody">
+      <div class="loading-line"><span class="spin"></span> <span data-i18n="tools.loading">Loading tools…</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- ── File preview modal ── -->
+<div class="modal-backdrop" id="fileModal">
+  <div class="modal modal-wide file-modal">
+    <div class="modal-header">
+      <h2 id="fileModalTitle">File</h2>
+      <button class="icon-btn" data-close-modal="fileModal">✕</button>
+    </div>
+    <div class="modal-body file-modal-body">
+      <pre class="file-preview" id="filePreview"></pre>
+    </div>
+  </div>
+</div>
+
+<!-- ── Theme & background picker ── -->
+<div class="theme-panel" id="themePanel" role="dialog" aria-labelledby="themePanelTitle">
+  <div class="theme-panel-head">
+    <h3 id="themePanelTitle" data-i18n="theme.title">Theme &amp; Background</h3>
+    <button class="icon-btn" id="themeClose" aria-label="Close">✕</button>
+  </div>
+
+  <div class="theme-section-label" data-i18n="theme.scheme">Color scheme</div>
+  <div class="theme-grid" id="themeGrid"></div>
+
+  <div class="theme-section-label" data-i18n="theme.background">Background</div>
+  <div class="theme-bg-row" id="bgRow"></div>
+</div>
+
+<div class="toast-wrap" id="toastWrap"></div>
+
+<script src="i18n.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

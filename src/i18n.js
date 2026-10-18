@@ -1,0 +1,466 @@
+// src/i18n.js — Terminal/CLI internationalization (English + Simplified Chinese)
+'use strict';
+
+const TRANSLATIONS = {
+  en: {
+    // Help text
+    'help.title'         : 'DEEPSEEK AGENT — AI Coding Agent via Browser Automation',
+    'help.usage'         : 'USAGE',
+    'help.usage.line'    : 'node src/index.js [OPTIONS] [TASK]',
+    'help.options'       : 'OPTIONS',
+    'help.opt.task'      : 'Task to run (can also be the last argument without a flag)',
+    'help.opt.interactive': 'Interactive REPL mode — keep browser open, run multiple tasks',
+    'help.opt.ui'        : 'Launch the web UI in your browser (default port 4765)',
+    'help.opt.dir'       : 'Set working directory (default: current directory)',
+    'help.opt.debug'     : 'Verbose debug output',
+    'help.opt.headless'  : 'Run browser in headless mode (must be logged in already)',
+    'help.opt.savelog'   : 'Save conversation log to ~/.deepseek-agent/logs/',
+    'help.opt.keepsession': 'Reuse the previous DeepSeek conversation on startup (default: start a new chat)',
+    'help.opt.calibrate' : 'Open browser and print DOM info to help fix selectors',
+    'help.opt.history'   : 'List your past DeepSeek conversations, then exit',
+    'help.opt.open'      : 'Open a past conversation by number or title to continue it',
+    'help.opt.view'      : 'Print the contents of the currently open conversation',
+    'help.opt.account'   : 'Start with a specific account (also adds it if new)',
+    'help.opt.accounts'  : 'List all configured accounts and exit',
+    'help.opt.acctadd'   : 'Add a new account profile and exit',
+    'help.opt.acctuse'   : 'Set the active account and exit',
+    'help.opt.acctremove': 'Remove an account (and its profile) and exit',
+    'help.opt.acctnext'  : 'Rotate to the next account and exit',
+    'help.opt.rotation'  : 'Account rotation policy: manual | round-robin | on-error',
+    'help.opt.lang'      : 'Set interface language: en | zh (default: auto)',
+    'help.opt.help'      : 'Show this help',
+    'help.examples'      : 'EXAMPLES',
+    'help.ex.single'     : 'Run a single task',
+    'help.ex.interactive': 'Interactive mode (recommended)',
+    'help.ex.dir'        : 'Run on a specific project directory',
+    'help.ex.debug'      : 'Debug mode (shows raw responses)',
+    'help.ex.headless'   : 'Headless (faster, requires prior login)',
+    'help.ex.ui'         : 'Launch the web UI',
+    'help.ex.history'    : 'List past conversations',
+    'help.ex.open'       : 'Continue an earlier conversation',
+    'help.ex.accounts'   : 'List configured accounts',
+    'help.ex.account'    : 'Start with a specific account',
+    'help.setup'         : 'FIRST-TIME SETUP',
+    'help.setup.1'       : 'npm run setup         (installs deps + Playwright browser)',
+    'help.setup.2'       : 'node src/index.js -i  (opens browser, log in to DeepSeek, then use normally)',
+    'help.setup.note'    : 'Session is saved — you only log in once.',
+    'help.config'        : 'CONFIG FILE',
+    'help.config.desc'   : 'Create deepseek-agent.config.json in your working directory to override settings:',
+
+    // Runtime
+    'runtime.workingDir' : 'Working directory :',
+    'runtime.sessionDir' : 'Session directory :',
+    'runtime.headless'   : 'Headless mode     :',
+    'runtime.debug'      : 'Debug mode        :',
+    'runtime.startingUI' : 'Starting web UI...',
+    'runtime.shuttingDown': 'Shutting down...',
+    'runtime.noTask'     : 'No task provided. Switching to interactive mode...',
+    'runtime.dirNotFound': 'Working directory not found:',
+    'runtime.launchFailed': 'Failed to launch browser:',
+    'runtime.agentError' : 'Agent error:',
+    'runtime.uncaught'   : 'Uncaught error:',
+    'runtime.unhandled'  : 'Unhandled rejection:',
+
+    // Interactive
+    'repl.header'        : 'Interactive Mode — Type your task and press Enter',
+    'repl.commands'      : 'Commands: "exit"/"quit" to stop, "new" for a new chat, "history"/"open <n>"/"view" for past chats, "accounts"/"account use <name>"/"account next" for account rotation',
+    'repl.historyHeader' : 'DeepSeek conversation history:',
+    'repl.historyEmpty'  : 'No conversation history found.',
+    'repl.historyItem'   : '  {n}. {title}',
+    'repl.opening'       : 'Opening conversation: {title}',
+    'repl.openFailed'    : 'Could not open conversation:',
+    'repl.viewHeader'    : 'Current conversation contents:',
+    'repl.viewEmpty'     : 'The current conversation is empty.',
+    'repl.usage'         : 'Usage: history | open <number|title> | view',
+    'repl.prompt'        : '❯ Task:',
+    'repl.exiting'       : 'Exiting...',
+    'repl.newChat'       : 'Starting new chat...',
+    'repl.continueOrNew' : 'Continue the current conversation? [Y/n] (n = new chat)',
+    'repl.taskFailed'    : 'Task failed:',
+
+    // Calibrate
+    'calib.header'       : 'Calibration Mode — Reading DOM selectors',
+    'calib.done'         : 'Done. Check the output above to update selectors in src/browser.js if needed.',
+
+    // Agent
+    'agent.task'         : 'Task:',
+    'agent.sending'      : 'Sending task to DeepSeek...',
+    'agent.continuingConversation': 'Continuing the existing conversation (tool prompt not re-sent).',
+    'agent.emptyResponse': 'Empty response received — retrying...',
+    'agent.emptyResponseResume': 'Empty response received (network glitch?) — auto-resuming ({n}/{max})...',
+    'agent.netErrorResume': 'Network interruption detected ({err}) — auto-resuming ({n}/{max})...',
+    'agent.resumeSendFailed': 'Could not send the resume request: {err}',
+    'agent.resumeExhausted': 'Gave up auto-resuming after {max} attempts — the connection may be down.',
+    'agent.truncatedResume': 'Response was cut off mid-generation — auto-resuming ({n}/{max})...',
+    'agent.truncatedUnrecoverable': 'Response was cut off and could not be auto-resumed — asking DeepSeek to answer again...',
+    'agent.parseError'   : 'Parse error:',
+    'agent.maxIterations': 'Reached maximum iterations ({max}). The task may be incomplete.',
+    'agent.looksLikeTool': 'Response looks like a tool call but was not parsed — asking AI to retry format...',
+    'agent.finalIncomplete': 'Final answer looks unfinished ({reason}) — asking AI to complete it ({n}/{max})...',
+    'agent.finalUnverified': 'Final answer still looks unfinished after verification ({reason}). Reporting it as-is.',
+    'agent.regenerated': 'Asked DeepSeek to regenerate the truncated answer...',
+    'agent.regenerateFailed': 'Could not click the regenerate button ({err}) — resending instead.',
+    'agent.firstMsgDebug' : '--- First message (truncated) ---',
+    'agent.rawRespDebug' : '--- Raw response ({n} chars) ---',
+    'agent.logSaved'     : 'Conversation saved:',
+    'agent.logSaveFailed': 'Could not save log:',
+    'agent.tokenSummary': 'Tokens — this task: ~{total} (in ~{input} / out ~{output}) · today: ~{day}',
+    'agent.log.title'    : 'DeepSeek Agent — Session Log',
+    'agent.log.date'     : 'Date:',
+    'agent.log.task'     : 'Task:',
+    'agent.log.workdir'  : 'Working Dir:',
+    'agent.log.final'    : 'FINAL RESPONSE:',
+
+    // Browser
+    'browser.launching'  : 'Launching browser with persistent session...',
+    'browser.ready'      : 'Browser ready!',
+    'browser.keepSession': 'keep-session enabled — reusing previous DeepSeek conversation',
+    'browser.navWarning' : 'Navigation warning:',
+    'browser.newChatDone': 'Started new chat session',
+    'browser.homeFallback': 'Navigated to DeepSeek home (new chat)',
+    'browser.noHistory'  : 'No DeepSeek conversation history found in the sidebar.',
+    'browser.noMatch'    : 'No conversation matched "{ref}".',
+    'browser.openedConv' : 'Opened conversation: {title}',
+
+    // Multi-account
+    'accounts.using'             : 'Using account: {name}',
+    'accounts.switching'         : 'Switching to account: {name}',
+    'accounts.switched'          : 'Now using account: {name}',
+    'accounts.alreadyActive'     : 'Account "{name}" is already active.',
+    'accounts.notFound'          : 'No such account: {name}',
+    'accounts.invalidName'       : 'Invalid account name: {name} (use letters, digits, . _ - only)',
+    'accounts.alreadyExists'     : 'Account already exists: {name}',
+    'accounts.cannotRemoveDefault': 'The "default" account cannot be removed.',
+    'accounts.registryParseFailed': 'Could not parse accounts registry:',
+    'accounts.registrySaveFailed': 'Could not save accounts registry:',
+    'accounts.removeProfileFailed': 'Could not delete account profile:',
+    'accounts.header'            : 'DeepSeek accounts:',
+    'accounts.item'              : '  {mark} {name}{label}',
+    'accounts.empty'             : 'No accounts registered.',
+    'accounts.added'             : 'Added account: {name}',
+    'accounts.removed'           : 'Removed account: {name}',
+    'accounts.rotated'           : 'Rotated to next account: {name}',
+    'accounts.rotationNone'      : 'Only one account exists — nothing to rotate.',
+    'accounts.usage'             : 'Usage: accounts | account add <name> | account use <name> | account remove <name> | account next',
+    'accounts.activeLabel'       : 'Active account     :',
+    'accounts.autoRotate'        : 'Account failed ({err}) — rotating to the next account...',
+    'browser.loginTitle': '🔐  LOGIN REQUIRED',
+    'browser.loginStep1': '1. Log in to DeepSeek in the browser window',
+    'browser.loginStep2': '2. Return here and press  ENTER  to continue',
+    'browser.responseDelayed': 'Response may have been delayed — continuing to wait...',
+    'browser.receiving'  : 'Receiving response{dots}  ({n} chars)',
+    'browser.screenshotSaved': 'Screenshot saved:',
+    'browser.domHeader'  : 'DOM DEBUG INFO',
+    'browser.domUrl'     : 'URL   :',
+    'browser.domTitle'   : 'Title :',
+    'browser.domInputs'  : 'Input elements:',
+    'browser.domClasses' : 'Matching CSS classes (by frequency):',
+
+    // UI server
+    'ui.title'           : 'DeepSeek Browser Agent — Web UI',
+    'ui.serving'         : 'Serving at',
+    'ui.openHint'        : 'Open the URL above in your browser to use the agent.',
+    'ui.stopHint'        : 'Press Ctrl+C to stop the server.',
+    'ui.portInUse'       : 'Port {port} is already in use.',
+    'ui.portHint'        : 'Set DSA_UI_PORT=<other-port> and try again.',
+    'ui.taskFailed'      : 'Task failed:',
+    'ui.error'           : 'Error:',
+    'ui.shuttingDown'    : 'Shutting down...',
+
+    // Calibrate tool
+    'calib.toolTitle'    : '🔬  DeepSeek Agent — Selector Calibration Tool',
+    'calib.toolDesc1'    : 'This tool opens DeepSeek, inspects the DOM, and prints out',
+    'calib.toolDesc2'    : 'the selectors that your browser.js should use.',
+    'calib.navigating'   : '→ Navigating to {url} ...',
+    'calib.inspecting'   : '→ Inspecting DOM...',
+    'calib.url'          : 'URL   :',
+    'calib.title'        : 'Title :',
+    'calib.inputs'       : '📥  INPUT ELEMENTS:',
+    'calib.noneFound'    : '  (none found — are you logged in?)',
+    'calib.buttons'      : '🔘  BUTTONS (visible, first 30):',
+    'calib.classes'      : '🏷️  TOP CSS CLASSES:',
+    'calib.suggested'    : '🎯  SUGGESTED SELECTORS (update browser.js SEL object):',
+    'calib.chatInput'    : "  chatInput  : '#{id}'  (or use the id above)",
+    'calib.sendButton'   : "  sendButton : '{sel}'",
+    'calib.stopButton'   : "  stopButton : '{sel}'",
+    'calib.newChat'      : "  newChat    : '{sel}'",
+    'calib.screenshot'   : '📸  Taking screenshot → /tmp/deepseek-calibrate.png',
+    'calib.complete'     : '✅  Calibration complete! Update src/browser.js SEL object with the selectors above.',
+    'calib.exit'         : '    Press Ctrl+C to exit.',
+    'calib.error'        : 'Calibration error:',
+
+    // Setup / postinstall
+    'setup.skip'         : '[deepseek-agent] Skipping Playwright browser install (CI detected).',
+    'setup.bannerTitle'  : '🤖  DeepSeek Browser Agent — Setup',
+    'setup.downloading'  : '  Downloading Playwright Chromium browser...',
+    'setup.once'         : '  (This only happens once — ~150 MB)',
+    'setup.installed'    : '  ✓ Browser installed successfully!',
+    'setup.getStarted'   : '  Get started:',
+    'setup.warn1'        : '  ⚠  Could not auto-install Chromium.',
+    'setup.warn2'        : '  Run this manually to complete setup:',
+    'setup.warnCmd'      : '    npx playwright install chromium',
+
+    // Config
+    'config.parseFailed' : '[deepseek-agent] Could not parse config file:',
+
+    // Logger
+    'log.bannerTitle'    : 'DeepSeek Browser Agent',
+    'log.bannerSub1'     : 'AI Coding Agent via Browser Automation',
+    'log.bannerSub2'     : 'No API key needed — uses chat.deepseek.com',
+    'log.toolCall'       : 'TOOL CALL',
+    'log.result'         : 'Result:',
+    'log.truncated'      : '  … (truncated for display)',
+    'log.taskComplete'   : 'TASK COMPLETE',
+    'log.step'           : 'Step {n}/{max}',
+  },
+
+  zh: {
+    // Help text
+    'help.title'         : 'DEEPSEEK AGENT — 基于浏览器自动化的 AI 编程助手',
+    'help.usage'         : '用法',
+    'help.usage.line'    : 'node src/index.js [选项] [任务]',
+    'help.options'       : '选项',
+    'help.opt.task'      : '要执行的任务（也可以直接作为最后一个参数给出）',
+    'help.opt.interactive': '交互式 REPL 模式 —— 保持浏览器打开，连续执行多个任务',
+    'help.opt.ui'        : '在浏览器中启动 Web 界面（默认端口 4765）',
+    'help.opt.dir'       : '设置工作目录（默认：当前目录）',
+    'help.opt.debug'     : '输出详细调试信息',
+    'help.opt.headless'  : '以无头模式运行浏览器（需事先登录）',
+    'help.opt.savelog'   : '将对话日志保存到 ~/.deepseek-agent/logs/',
+    'help.opt.keepsession': '启动时复用上一次的 DeepSeek 对话（默认：开启新对话）',
+    'help.opt.calibrate' : '打开浏览器并输出 DOM 信息，帮助修复选择器',
+    'help.opt.history'   : '列出你过去的 DeepSeek 对话，然后退出',
+    'help.opt.open'      : '按序号或标题打开一段历史对话以继续',
+    'help.opt.view'      : '打印当前打开对话的内容',
+    'help.opt.account'   : '以指定账号启动（若不存在则自动添加）',
+    'help.opt.accounts'  : '列出所有已配置的账号并退出',
+    'help.opt.acctadd'   : '添加一个新的账号配置并退出',
+    'help.opt.acctuse'   : '设置当前激活的账号并退出',
+    'help.opt.acctremove': '移除某个账号（及其配置目录）并退出',
+    'help.opt.acctnext'  : '轮换到下一个账号并退出',
+    'help.opt.rotation'  : '账号轮换策略：manual | round-robin | on-error',
+    'help.opt.lang'      : '设置界面语言：en | zh（默认：自动）',
+    'help.opt.help'      : '显示此帮助',
+    'help.examples'      : '示例',
+    'help.ex.single'     : '执行单个任务',
+    'help.ex.interactive': '交互模式（推荐）',
+    'help.ex.dir'        : '在指定项目目录中运行',
+    'help.ex.debug'      : '调试模式（显示原始响应）',
+    'help.ex.headless'   : '无头模式（更快，需事先登录）',
+    'help.ex.ui'         : '启动 Web 界面',
+    'help.ex.history'    : '列出历史对话',
+    'help.ex.open'       : '继续之前的对话',
+    'help.ex.accounts'   : '列出已配置账号',
+    'help.ex.account'    : '以指定账号启动',
+    'help.setup'         : '首次使用设置',
+    'help.setup.1'       : 'npm run setup         （安装依赖 + Playwright 浏览器）',
+    'help.setup.2'       : 'node src/index.js -i  （打开浏览器，登录 DeepSeek，然后正常使用）',
+    'help.setup.note'    : '会话会被保存 —— 只需登录一次。',
+    'help.config'        : '配置文件',
+    'help.config.desc'   : '在工作目录中创建 deepseek-agent.config.json 以覆盖设置：',
+
+    // Runtime
+    'runtime.workingDir' : '工作目录 :',
+    'runtime.sessionDir' : '会话目录 :',
+    'runtime.headless'   : '无头模式 :',
+    'runtime.debug'      : '调试模式 :',
+    'runtime.startingUI' : '正在启动 Web 界面...',
+    'runtime.shuttingDown': '正在关闭...',
+    'runtime.noTask'     : '未提供任务，切换为交互模式...',
+    'runtime.dirNotFound': '找不到工作目录：',
+    'runtime.launchFailed': '启动浏览器失败：',
+    'runtime.agentError' : '助手出错：',
+    'runtime.uncaught'   : '未捕获的错误：',
+    'runtime.unhandled'  : '未处理的 Promise 拒绝：',
+
+    // Interactive
+    'repl.header'        : '交互模式 —— 输入任务并按回车',
+    'repl.commands'      : '命令："exit"/"quit" 退出，"new" 开启新对话，"history"/"open <序号>"/"view" 查看历史对话，"accounts"/"account use <名称>"/"account next" 管理账号轮换',
+    'repl.historyHeader' : 'DeepSeek 历史对话：',
+    'repl.historyEmpty'  : '未找到历史对话。',
+    'repl.historyItem'   : '  {n}. {title}',
+    'repl.opening'       : '正在打开对话：{title}',
+    'repl.openFailed'    : '无法打开对话：',
+    'repl.viewHeader'    : '当前对话内容：',
+    'repl.viewEmpty'     : '当前对话为空。',
+    'repl.usage'         : '用法：history | open <序号|标题> | view',
+    'repl.prompt'        : '❯ 任务:',
+    'repl.exiting'       : '正在退出...',
+    'repl.newChat'       : '正在开启新对话...',
+    'repl.continueOrNew' : '是否继续当前对话？[Y/n]（n = 开启新对话）',
+    'repl.taskFailed'    : '任务失败：',
+
+    // Calibrate
+    'calib.header'       : '校准模式 —— 读取 DOM 选择器',
+    'calib.done'         : '完成。请查看上方输出，如有需要请更新 src/browser.js 中的选择器。',
+
+    // Agent
+    'agent.task'         : '任务：',
+    'agent.sending'      : '正在向 DeepSeek 发送任务...',
+    'agent.continuingConversation': '继续当前对话（不再重复发送工具提示词）。',
+    'agent.emptyResponse': '收到空响应 —— 正在重试...',
+    'agent.emptyResponseResume': '收到空响应（可能是网络波动）—— 正在自动续接（{n}/{max}）...',
+    'agent.netErrorResume': '检测到网络中断（{err}）—— 正在自动续接（{n}/{max}）...',
+    'agent.resumeSendFailed': '无法发送续接请求：{err}',
+    'agent.resumeExhausted': '自动续接 {max} 次后仍未成功 —— 网络可能已断开。',
+    'agent.truncatedResume': '响应在生成中途被截断 —— 正在自动续接（{n}/{max}）...',
+    'agent.truncatedUnrecoverable': '响应被截断且无法自动续接 —— 正在要求 DeepSeek 重新作答...',
+    'agent.parseError'   : '解析错误：',
+    'agent.maxIterations': '已达到最大迭代次数（{max}），任务可能未完成。',
+    'agent.looksLikeTool': '响应看起来像工具调用但未能解析 —— 已要求 AI 重试格式...',
+    'agent.finalIncomplete': '最终回复看起来未完成（{reason}）—— 已要求 AI 补全（{n}/{max}）...',
+    'agent.finalUnverified': '最终回复经校验仍像未完成（{reason}），按原样输出。',
+    'agent.regenerated': '已点击 DeepSeek 的"重新生成"，重新获取被截断的回复...',
+    'agent.regenerateFailed': '未能点击重新生成按钮（{err}）—— 改为重新发送。',
+    'agent.firstMsgDebug' : '--- 首条消息（已截断） ---',
+    'agent.rawRespDebug' : '--- 原始响应（{n} 字符） ---',
+    'agent.logSaved'     : '对话已保存：',
+    'agent.logSaveFailed': '无法保存日志：',
+    'agent.tokenSummary': 'Token —— 本次任务：约 {total}（输入约 {input} / 输出约 {output}）· 今日：约 {day}',
+    'agent.log.title'    : 'DeepSeek Agent —— 会话日志',
+    'agent.log.date'     : '日期：',
+    'agent.log.task'     : '任务：',
+    'agent.log.workdir'  : '工作目录：',
+    'agent.log.final'    : '最终响应：',
+
+    // Browser
+    'browser.launching'  : '正在启动带持久化会话的浏览器...',
+    'browser.ready'      : '浏览器已就绪！',
+    'browser.keepSession': '已启用 keep-session —— 复用上一次的 DeepSeek 对话',
+    'browser.navWarning' : '导航警告：',
+    'browser.newChatDone': '已开始新的对话会话',
+    'browser.homeFallback': '已导航至 DeepSeek 首页（新对话）',
+    'browser.noHistory'  : '侧边栏中未找到 DeepSeek 历史对话。',
+    'browser.noMatch'    : '没有匹配 "{ref}" 的对话。',
+    'browser.openedConv' : '已打开对话：{title}',
+
+    // Multi-account
+    'accounts.using'             : '当前账号：{name}',
+    'accounts.switching'         : '正在切换到账号：{name}',
+    'accounts.switched'          : '已切换为账号：{name}',
+    'accounts.alreadyActive'     : '账号 "{name}" 已处于激活状态。',
+    'accounts.notFound'          : '不存在该账号：{name}',
+    'accounts.invalidName'       : '无效的账号名：{name}（仅可使用字母、数字、. _ -）',
+    'accounts.alreadyExists'     : '账号已存在：{name}',
+    'accounts.cannotRemoveDefault': '默认账号 "default" 无法删除。',
+    'accounts.registryParseFailed': '无法解析账号注册表：',
+    'accounts.registrySaveFailed': '无法保存账号注册表：',
+    'accounts.removeProfileFailed': '无法删除账号配置目录：',
+    'accounts.header'            : 'DeepSeek 账号：',
+    'accounts.item'              : '  {mark} {name}{label}',
+    'accounts.empty'             : '尚未注册任何账号。',
+    'accounts.added'             : '已添加账号：{name}',
+    'accounts.removed'           : '已移除账号：{name}',
+    'accounts.rotated'           : '已轮换到下一个账号：{name}',
+    'accounts.rotationNone'      : '只有一个账号 —— 无需轮换。',
+    'accounts.usage'             : '用法：accounts | account add <名称> | account use <名称> | account remove <名称> | account next',
+    'accounts.activeLabel'       : '当前账号           ：',
+    'accounts.autoRotate'        : '账号出错（{err}）—— 正在轮换到下一个账号...',
+    'browser.loginTitle': '🔐  需要登录',
+    'browser.loginStep1': '1. 在浏览器窗口中登录 DeepSeek',
+    'browser.loginStep2': '2. 返回此处并按回车键继续',
+    'browser.responseDelayed': '响应可能有延迟 —— 继续等待...',
+    'browser.receiving'  : '正在接收响应{dots}（{n} 字符）',
+    'browser.screenshotSaved': '截图已保存：',
+    'browser.domHeader'  : 'DOM 调试信息',
+    'browser.domUrl'     : '地址   :',
+    'browser.domTitle'   : '标题   :',
+    'browser.domInputs'  : '输入元素：',
+    'browser.domClasses' : '匹配的 CSS 类（按出现频率）：',
+
+    // UI server
+    'ui.title'           : 'DeepSeek Browser Agent —— Web 界面',
+    'ui.serving'         : '服务地址',
+    'ui.openHint'        : '在浏览器中打开上方地址即可使用助手。',
+    'ui.stopHint'        : '按 Ctrl+C 停止服务器。',
+    'ui.portInUse'       : '端口 {port} 已被占用。',
+    'ui.portHint'        : '请设置 DSA_UI_PORT=<其他端口> 后重试。',
+    'ui.taskFailed'      : '任务失败：',
+    'ui.error'           : '错误：',
+    'ui.shuttingDown'    : '正在关闭...',
+
+    // Calibrate tool
+    'calib.toolTitle'    : '🔬  DeepSeek Agent —— 选择器校准工具',
+    'calib.toolDesc1'    : '此工具会打开 DeepSeek，检查 DOM，并打印出',
+    'calib.toolDesc2'    : 'browser.js 应使用的选择器。',
+    'calib.navigating'   : '→ 正在导航至 {url} ...',
+    'calib.inspecting'   : '→ 正在检查 DOM...',
+    'calib.url'          : '地址   :',
+    'calib.title'        : '标题   :',
+    'calib.inputs'       : '📥  输入元素：',
+    'calib.noneFound'    : '  （未找到 —— 你是否已登录？）',
+    'calib.buttons'      : '🔘  按钮（可见，前 30 个）：',
+    'calib.classes'      : '🏷️  高频 CSS 类：',
+    'calib.suggested'    : '🎯  建议的选择器（更新 browser.js 中的 SEL 对象）：',
+    'calib.chatInput'    : "  chatInput  : '#{id}'  （或使用上方的 id）",
+    'calib.sendButton'   : "  sendButton : '{sel}'",
+    'calib.stopButton'   : "  stopButton : '{sel}'",
+    'calib.newChat'      : "  newChat    : '{sel}'",
+    'calib.screenshot'   : '📸  正在截图 → /tmp/deepseek-calibrate.png',
+    'calib.complete'     : '✅  校准完成！请用上方的选择器更新 src/browser.js 中的 SEL 对象。',
+    'calib.exit'         : '    按 Ctrl+C 退出。',
+    'calib.error'        : '校准出错：',
+
+    // Setup / postinstall
+    'setup.skip'         : '[deepseek-agent] 已跳过 Playwright 浏览器安装（检测到 CI 环境）。',
+    'setup.bannerTitle'  : '🤖  DeepSeek Browser Agent —— 安装设置',
+    'setup.downloading'  : '  正在下载 Playwright Chromium 浏览器...',
+    'setup.once'         : '  （仅需执行一次 —— 约 150 MB）',
+    'setup.installed'    : '  ✓ 浏览器安装成功！',
+    'setup.getStarted'   : '  开始使用：',
+    'setup.warn1'        : '  ⚠  无法自动安装 Chromium。',
+    'setup.warn2'        : '  请手动运行以下命令完成安装：',
+    'setup.warnCmd'      : '    npx playwright install chromium',
+
+    // Config
+    'config.parseFailed' : '[deepseek-agent] 无法解析配置文件：',
+
+    // Logger
+    'log.bannerTitle'    : 'DeepSeek Browser Agent',
+    'log.bannerSub1'     : '基于浏览器自动化的 AI 编程助手',
+    'log.bannerSub2'     : '无需 API 密钥 —— 使用 chat.deepseek.com',
+    'log.toolCall'       : '工具调用',
+    'log.result'         : '结果：',
+    'log.truncated'      : '  …（显示内容已截断）',
+    'log.taskComplete'   : '任务完成',
+    'log.step'           : '步骤 {n}/{max}',
+  },
+};
+
+// ─────────────────────────────────────────────
+//  Language resolution
+// ─────────────────────────────────────────────
+function detectLanguage() {
+  // Priority: DSA_LANG env > system locale > fallback
+  const envLang = (process.env.DSA_LANG || process.env.LANG || process.env.LC_ALL || '').toLowerCase();
+  if (envLang.startsWith('zh')) return 'zh';
+  if (envLang.startsWith('en')) return 'en';
+  // Windows: check LC_MESSAGES / locale-ish
+  if (/chinese|zh[-_]?cn/i.test(process.env.LANG || '')) return 'zh';
+  return 'en';
+}
+
+let currentLang = detectLanguage();
+
+function setLanguage(lang) {
+  if (TRANSLATIONS[lang]) currentLang = lang;
+}
+
+function getLanguage() {
+  return currentLang;
+}
+
+function t(key, vars) {
+  const dict = TRANSLATIONS[currentLang] || TRANSLATIONS.en;
+  let str = dict[key];
+  if (str == null) str = TRANSLATIONS.en[key];
+  if (str == null) return key;
+  if (vars && typeof vars === 'object') {
+    str = str.replace(/\{(\w+)\}/g, (_, name) =>
+      Object.prototype.hasOwnProperty.call(vars, name) ? String(vars[name]) : `{${name}}`
+    );
+  }
+  return str;
+}
+
+module.exports = { t, setLanguage, getLanguage, detectLanguage, TRANSLATIONS };

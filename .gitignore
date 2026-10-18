@@ -1,0 +1,33 @@
+# Dependencies
+node_modules/
+
+# Build output
+dist/
+build/
+coverage/
+*.log
+
+# Runtime / user data
+.deepseek-agent/
+
+# Debug dumps & scratch files
+_dump_browser.txt
+*.tmp
+*.bak
+
+# Editor / OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# Local environment secrets
+.env
+.env.local
+.env.*.local
+*.pem
+*.key
+
+# Test artifacts
+test-results/
+*.tsbuildinfo

@@ -220,10 +220,11 @@ Then open **http://127.0.0.1:4765** in your browser.
 
 - **Chat interface** — send tasks, see the agent's final answer rendered with markdown & syntax-highlighted code blocks
 - **Live activity stream** — every tool call, file write, and command is streamed in real time via Server-Sent Events
-- **Tool inspector** — browse all 15 available tools and their parameters
+- **Tool inspector** — browse all available tools and their parameters
 - **Settings panel** — change the working directory, max iterations, headless mode and debug logging on the fly
 - **Session control** — start a new DeepSeek chat or reuse the previous conversation with a single toggle
 - **Status indicator** — always know whether the browser is idle, launching, ready or working
+- **Material 3 design** — built on [Beer CSS](https://www.beercss.com/), with a neutral `Slate` theme (default), 6 alternate color schemes, and a Plain background by default. Motion uses Material's emphasized easing curves, respects `prefers-reduced-motion`, and the interface deliberately avoids the usual "AI product" look (no glowing blobs, no emoji chrome).
 
 ### Environment variables
 
@@ -506,6 +507,8 @@ deepseek-browser-agent/
 │       ├── server.js     ← Zero-dependency HTTP + SSE server for the web UI
 │       ├── workspace.js  ← Sandboxed file-tree / preview helpers
 │       └── public/       ← Single-page frontend (HTML/CSS/JS)
+│           ├── beer-skin.css  ← Material 3 visual layer (Beer CSS)
+│           └── vendor/        ← bundled Beer CSS + JS (no CDN at runtime)
 ├── docs/                 ← Developer documentation
 │   ├── ARCHITECTURE.md
 │   ├── API.md

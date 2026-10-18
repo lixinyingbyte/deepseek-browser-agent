@@ -85,6 +85,7 @@ const state = {
 // Registry of selectable color schemes. `swatch` is a CSS gradient used for
 // the little preview tile in the picker.
 const THEMES = [
+  { id: 'slate',     name: 'Slate',     swatch: 'linear-gradient(135deg,#171a1d,#9dc3e6)' },
   { id: 'light',     name: 'Light',     swatch: 'linear-gradient(135deg,#ffffff,#e9ecf7)' },
   { id: 'nord',      name: 'Nord',      swatch: 'linear-gradient(135deg,#2e3440,#88c0d0)' },
   { id: 'dracula',   name: 'Dracula',   swatch: 'linear-gradient(135deg,#282a36,#bd93f9)' },
@@ -103,8 +104,8 @@ const BACKGROUNDS = [
 
 const THEME_STORAGE   = 'dsa-ui-theme';
 const BG_STORAGE      = 'dsa-ui-bg';
-const DEFAULT_THEME   = 'sakura';
-const DEFAULT_BG      = 'aurora';
+const DEFAULT_THEME   = 'slate';
+const DEFAULT_BG      = 'plain';
 
 const themeState = {
   theme: DEFAULT_THEME,

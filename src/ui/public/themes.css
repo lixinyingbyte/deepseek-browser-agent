@@ -209,3 +209,35 @@ html[data-bg="aurora"] body::before {
   .blob, .welcome-icon, html[data-bg="aurora"] body::before { animation: none !important; }
   .chat-scroll { scroll-behavior: auto; }
 }
+
+/* ── slate — neutral Material-3 palette (no AI-flavoured gradients) ── */
+html[data-theme="slate"] {
+  --bg-0: #101214; --bg-1: #171a1d; --bg-2: #1d2125; --bg-3: #23282d; --bg-elev: #1d2125;
+  --border: rgba(230,233,237,.08); --border-2: rgba(230,233,237,.14);
+  --text-0: #e6e9ed; --text-1: #c3cad2; --text-2: #9aa4b2; --text-3: #6d7885;
+  --accent: #9dc3e6; --accent-2: #7fa9cf; --accent-3: #b9d5ef;
+  --cyan: #8fc7c0; --green: #7fd1a8; --amber: #e6c07b; --rose: #ffb4ab;
+  --accent-rgb: 157,195,230; --accent2-rgb: 127,169,207;
+  --grad-brand: #9dc3e6; --grad-glow: none;
+  --heading-grad: #e6e9ed;
+  --shadow-sm: 0 1px 2px rgba(0,0,0,.40);
+  --shadow: 0 4px 12px rgba(0,0,0,.45);
+  --shadow-lg: 0 12px 32px rgba(0,0,0,.55);
+  --surface-glass: rgba(23,26,29,.92);
+  --panel-glass: rgba(23,26,29,.85);
+  --backdrop: rgba(0,0,0,.55);
+  --footer-bg: rgba(0,0,0,.20);
+  --scroll-thumb: rgba(255,255,255,.12);
+  --scroll-thumb-hover: rgba(255,255,255,.22);
+  --code-bg: #12161a;
+  --code-text: #c3cad2;
+  --pre-text: #c3cad2;
+  --soft: rgba(255,255,255,.05);
+  --err-text: #ffb4ab;
+  --brand-mark-shadow: none;
+  --primary-shadow: none;
+  --primary-shadow-h: none;
+  --topbar-blur: blur(10px) saturate(1.1);
+  --bg-blob-1: transparent; --bg-blob-2: transparent; --bg-blob-3: transparent;
+  --bg-line: rgba(255,255,255,.04);
+}

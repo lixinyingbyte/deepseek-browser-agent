@@ -6,7 +6,6 @@
    ───────────────────────────────────────────────────────────── */
 
 :root {
-  --mi-font: 'Material Symbols Rounded';
   --ease:      cubic-bezier(.2, 0, 0, 1);
   --ease-out:  cubic-bezier(.05, .7, .1, 1);
   --t-fast: 120ms;
@@ -33,16 +32,12 @@ html, body {
 .bg-blobs, .blob { display: none !important; }
 body::before, body::after { display: none !important; }
 
-/* Material Symbols helper */
-.mi {
-  font-family: var(--mi-font);
-  font-weight: 400;
-  font-size: 20px;
-  line-height: 1;
-  font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
-  vertical-align: middle;
-  user-select: none;
-  transition: font-variation-settings var(--t-fast) var(--ease);
+/* Inline SVG icons (no icon font, no CDN dependency) */
+.brand-mark svg,
+.welcome-icon svg,
+.s-icon svg {
+  display: block;
+  stroke: currentColor;
 }
 
 /* Focus ring — M3 style, calm and visible. */
@@ -65,17 +60,15 @@ body::before, body::after { display: none !important; }
 *::-webkit-scrollbar-track { background: transparent; }
 
 /* ── Top bar ──────────────────────────────────────────────── */
+/* Keep the 64px height — .layout sizes itself with
+   calc(100vh - var(--topbar-h)); changing this overflows the page. */
 .topbar {
   background: var(--surface-glass) !important;
   backdrop-filter: var(--topbar-blur);
   -webkit-backdrop-filter: var(--topbar-blur);
   border-bottom: 1px solid var(--border) !important;
   box-shadow: none !important;
-  height: 56px;
-  padding: 0 16px;
-  position: sticky;
-  top: 0;
-  z-index: 40;
+  height: var(--topbar-h) !important;
 }
 
 .brand-mark {
@@ -87,7 +80,7 @@ body::before, body::after { display: none !important; }
   box-shadow: none !important;
   font-size: 18px;
 }
-.brand-mark .mi { font-size: 20px; }
+
 
 .brand-text h1 {
   font-size: 14px !important;
@@ -189,7 +182,8 @@ body::before, body::after { display: none !important; }
 }
 
 /* ── Layout & panels ─────────────────────────────────────── */
-.layout { gap: 12px !important; padding: 12px !important; }
+/* No padding/gap overrides here: .layout is a fixed-height grid
+   (calc(100vh - topbar)); adding spacing would overflow it. */
 
 .workspace-col,
 .activity-col,
@@ -294,7 +288,7 @@ body::before, body::after { display: none !important; }
   color: var(--accent) !important;
   box-shadow: none !important;
 }
-.welcome-icon .mi { font-size: 24px; }
+.welcome-icon { animation: none !important; filter: none !important; }
 
 .welcome h2 {
   font-size: 19px !important;
@@ -346,7 +340,7 @@ body::before, body::after { display: none !important; }
   background: var(--soft) !important;
   color: var(--accent) !important;
 }
-.suggestion .s-icon .mi { font-size: 16px; }
+
 .suggestion b {
   display: block;
   font-size: 13px !important;
@@ -371,7 +365,8 @@ body::before, body::after { display: none !important; }
   to   { opacity: 1; transform: translateY(0); }
 }
 
-/* Replace the emoji avatars with neutral monogram squares. */
+/* Neutral avatar square — the emoji glyph is hidden, a small CSS
+   shape stands in. No icon font, so nothing can render as raw text. */
 .msg-avatar {
   width: 28px; height: 28px; flex: 0 0 28px;
   display: grid; place-items: center;
@@ -382,34 +377,53 @@ body::before, body::after { display: none !important; }
   position: relative;
 }
 .msg-avatar::after {
-  font-size: 15px;
-  line-height: 1;
-  font-family: var(--mi-font);
-  font-variation-settings: 'FILL' 0, 'wght' 500, 'GRAD' 0, 'opsz' 24;
+  content: '';
+  display: block;
+  width: 9px; height: 9px;
+  border-radius: 50%;
+  border: 2px solid currentColor;
 }
-.msg.user .msg-avatar::after      { content: 'person'; }
-.msg.assistant .msg-avatar::after { content: 'smart_toy'; }
-.msg.error .msg-avatar::after     { content: 'error'; color: var(--rose); }
+.msg.user .msg-avatar::after      { border-radius: 2px; background: currentColor; border: none; width: 8px; height: 8px; }
+.msg.assistant .msg-avatar::after { border-color: var(--accent); }
+.msg.error .msg-avatar::after     { border: none; width: 9px; height: 9px; border-radius: 50%; background: var(--rose); }
 
-.msg-body { min-width: 0; flex: 1; }
+/* The bubble is .msg-body (as in styles.css) — .msg-content is just
+   the inner content container, so it must NOT paint a second surface. */
+.msg-body {
+  min-width: 0;
+  flex: 1;
+  padding: 11px 14px !important;
+  background: var(--bg-2) !important;
+  border: 1px solid var(--border) !important;
+  border-radius: var(--r-sm) !important;
+  color: var(--text-0) !important;
+  overflow-wrap: anywhere;
+}
+.msg.user .msg-body {
+  background: var(--soft) !important;
+  border-color: var(--border-2) !important;
+  color: var(--text-0) !important;
+}
+.msg.error .msg-body {
+  background: var(--soft) !important;
+  border-color: var(--rose) !important;
+  color: var(--err-text) !important;
+}
+
 .msg-meta {
   font-size: 11px !important;
   color: var(--text-3) !important;
-  margin-bottom: 4px;
+  margin-bottom: 6px;
   letter-spacing: .02em;
 }
 .msg-content {
   font-size: 13.5px !important;
   line-height: 1.68;
-  color: var(--text-0) !important;
-  border-radius: var(--r-sm) !important;
-  background: var(--bg-2);
-  border: 1px solid var(--border);
-  padding: 12px 14px;
-  overflow-wrap: anywhere;
+  color: inherit !important;
+  background: none !important;
+  border: none !important;
+  padding: 0 !important;
 }
-.msg.user .msg-content { background: var(--soft); }
-.msg.error .msg-content { border-color: var(--rose); color: var(--err-text) !important; }
 
 .msg-content pre,
 .msg-content code {

@@ -224,7 +224,7 @@ Then open **http://127.0.0.1:4765** in your browser.
 - **Settings panel** — change the working directory, max iterations, headless mode and debug logging on the fly
 - **Session control** — start a new DeepSeek chat or reuse the previous conversation with a single toggle
 - **Status indicator** — always know whether the browser is idle, launching, ready or working
-- **Material 3 design** — built on [Beer CSS](https://www.beercss.com/), with a neutral `Slate` theme (default), 6 alternate color schemes, and a Plain background by default. Motion uses Material's emphasized easing curves, respects `prefers-reduced-motion`, and the interface deliberately avoids the usual "AI product" look (no glowing blobs, no emoji chrome).
+- **Material 3 design** — a hand-written Material 3 skin (`beer-skin.css`) with a neutral `Slate` theme (default), 6 alternate color schemes, and a Plain background by default. Motion uses Material's emphasized easing curves, respects `prefers-reduced-motion`, and the interface deliberately avoids the usual "AI product" look (no glowing blobs, no emoji chrome). Icons are inline SVG, so nothing depends on an icon font or a CDN at runtime.
 
 ### Environment variables
 
@@ -507,8 +507,8 @@ deepseek-browser-agent/
 │       ├── server.js     ← Zero-dependency HTTP + SSE server for the web UI
 │       ├── workspace.js  ← Sandboxed file-tree / preview helpers
 │       └── public/       ← Single-page frontend (HTML/CSS/JS)
-│           ├── beer-skin.css  ← Material 3 visual layer (Beer CSS)
-│           └── vendor/        ← bundled Beer CSS + JS (no CDN at runtime)
+│           ├── beer-skin.css  ← Material 3 visual layer (pure CSS)
+│           └── vendor/        ← unused Beer CSS bundle (safe to delete)
 ├── docs/                 ← Developer documentation
 │   ├── ARCHITECTURE.md
 │   ├── API.md

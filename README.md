@@ -411,7 +411,7 @@ Contributions are very welcome — this project is in active development and the
 ### Setting up locally
 
 ```bash
-git clone https://github.com/Omar-Azam/deepseek-browser-agent
+git clone https://github.com/lixinyingbyte/deepseek-browser-agen
 cd deepseek-browser-agent
 npm install
 npx playwright install chromium
@@ -460,7 +460,7 @@ MIT — see [LICENSE](./LICENSE) for details.
 
 <div align="center">
 
-**Built with Playwright · Powered by DeepSeek · Free forever**
+**Built with None · Powered by DeepSeek · Free forever**
 
 If this project helped you, consider giving it a ⭐ on GitHub!
 

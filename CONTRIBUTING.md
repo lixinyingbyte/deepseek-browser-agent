@@ -6,11 +6,15 @@ development and contributions are very welcome.
 ## Getting started
 
 ```bash
-git clone https://github.com/Omar-Azam/deepseek-browser-agent.git
+git clone https://github.com/lixinyingbyte/deepseek-browser-agent.git
 cd deepseek-browser-agent
+git checkout local-workbench     # this fork's work
 npm install
 node src/index.js --interactive   # log in to DeepSeek once
 ```
+
+> This is a modified fork of [`Omar-Azam/forge-agent`](https://github.com/Omar-Azam/forge-agent).
+> See [What's Different From Upstream](./README.md#-whats-different-from-upstream).
 
 See [docs/DEVELOPMENT.md](./docs/DEVELOPMENT.md) for the full developer guide.
 

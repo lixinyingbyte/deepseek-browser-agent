@@ -12,7 +12,15 @@
 
 It drives a real browser to talk to [DeepSeek](https://chat.deepseek.com), giving you a Claude Code / Cursor-style coding agent powered by DeepSeek's models at zero cost.
 
-[Installation](#-installation) · [Quick Start](#-quick-start) · [Usage](#-usage) · [Configuration](#-configuration) · [Tools](#-available-tools) · [Developer Docs](./docs/README.md) · [Contributing](#-contributing)
+> 🍴 **This is a modified fork.** It is based on
+> [`Omar-Azam/forge-agent`](https://github.com/Omar-Azam/forge-agent) (via
+> `Windows-Feilulu/deepseek-browser-agent`) with substantial additions: a local
+> **web UI**, **multi-account rotation**, a **checkpoint/undo** system, git tools,
+> token tracking, i18n and full developer docs.
+> See [What's Different From Upstream](#-whats-different-from-upstream) and
+> [Install This Fork](#-install-this-fork).
+
+[Install This Fork](#-install-this-fork) · [What's Different](#-whats-different-from-upstream) · [Quick Start](#-quick-start) · [Usage](#-usage) · [Configuration](#-configuration) · [Tools](#-available-tools) · [Developer Docs](./docs/README.md) · [Contributing](#-contributing)
 
 ---
 
@@ -46,19 +54,131 @@ Your Terminal
 
 ---
 
-## 📦 Installation
+## 📦 Install This Fork
+
+This fork is **not published to npm** under its own name. Install it by
+cloning this repository. Do **not** run `npm install -g deepseek-browser-agent`
+— that pulls the upstream package, not this fork.
+
+**Requirements:** Node.js ≥ 18 (tested on v24), a free DeepSeek account, and
+~150 MB of disk for Chromium.
+
+### Option A — Clone & run locally (recommended)
 
 ```bash
-npm install -g deepseek-browser-agent
+git clone https://github.com/lixinyingbyte/deepseek-browser-agent.git
+cd deepseek-browser-agent
+git checkout local-workbench        # this fork's work lives on this branch
+npm install                         # also downloads Chromium via postinstall
+node src/index.js --interactive     # first run: log in to DeepSeek once
 ```
 
-> Chromium downloads automatically after install (~150 MB, one time only).
+If the automatic Chromium download fails, run it manually:
 
-**Requirements:** Node.js ≥ 18
+```bash
+npx playwright install chromium
+```
+
+### Option B — Install globally from the clone
+
+So you can call `deepseek-agent` / `dsa` from any folder:
+
+```bash
+git clone https://github.com/lixinyingbyte/deepseek-browser-agent.git
+cd deepseek-browser-agent
+git checkout local-workbench
+npm install
+npm install -g .
+```
+
+Then from anywhere:
+
+```bash
+dsa "build a REST API in Express with user authentication"
+```
+
+### Option C — Use a release archive
+
+Download the ZIP of the `local-workbench` branch from GitHub, extract it, then:
+
+```bash
+npm install
+node src/index.js --interactive
+```
+
+### Windows convenience launchers
+
+This fork ships two Windows batch files:
+
+| File | Purpose |
+|------|---------|
+| `start-agent.bat` | Checks a local proxy (default `127.0.0.1:2080`), optionally routes the agent through it, then starts the CLI. |
+| `launch-ui.bat` | Starts the web UI (Chinese UI) at `http://127.0.0.1:4765`. |
+
+### Verify the install
+
+```bash
+node src/index.js --help        # CLI is wired up
+node src/index.js --calibrate   # browser + DeepSeek selectors work
+node src/ui/server.js           # web UI at http://127.0.0.1:4765
+```
+
+---
+
+## 🔀 What's Different From Upstream
+
+This repository is a fork of
+[`Omar-Azam/forge-agent`](https://github.com/Omar-Azam/forge-agent) (the project
+originally published as `deepseek-browser-agent`), by way of
+[`Windows-Feilulu/deepseek-browser-agent`](https://github.com/Windows-Feilulu/deepseek-browser-agent).
+It keeps the original browser-automation core and adds a large set of features.
+
+### At a glance
+
+| Area | Upstream (forge-agent) | This fork |
+|------|------------------------|-----------|
+| **Local web UI** | ✗ | ✅ Zero-dependency HTTP + SSE UI (`src/ui/`) with chat, live activity stream, tool inspector, settings panel |
+| **Multi-account** | ✗ | ✅ Per-account browser profiles, registry, `manual` / `round-robin` / `on-error` rotation |
+| **Undo / checkpoints** | ✗ | ✅ Every file write is snapshotted; `checkpoint_restore` undoes any change |
+| **Git tools** | ✗ | ✅ `git_status`, `git_diff`, `git_log`, `git_add`, `git_commit`, `git_branch`, `git_blame` |
+| **Partial edits** | ✗ | ✅ `apply_patch` (atomic search/replace hunks) |
+| **Completion guard** | basic | ✅ `(complete)` marker verification + unclosed-fence detection |
+| **Auto-resume** | ✗ | ✅ Detects network cut-offs / truncation and resumes; Regenerate fallback |
+| **Token tracking** | ✗ | ✅ Heuristic per-task & daily token usage |
+| **i18n** | ✗ | ✅ CLI + Web UI in English and Simplified Chinese |
+| **Danger confirmation** | ✗ | ✅ Human-in-the-loop prompt for destructive ops |
+| **Developer docs** | minimal | ✅ Full `docs/` (architecture, API, tools, config, development) |
+| **Session reuse** | ✗ | ✅ `--keep-session`, history browsing, conversation open/view |
+
+### Tool set
+
+**Added in this fork:** `apply_patch`, `git_status`, `git_diff`, `git_log`,
+`git_add`, `git_commit`, `git_branch`, `git_blame`, `checkpoint_list`,
+`checkpoint_restore`, `checkpoint_clear`.
+
+**Removed from this fork:** `ask_user` (replaced by non-blocking error recovery
+and the completion hand-shake).
+
+**Changed:** file writes are **checkpointed** before they happen, so every
+mutation is undoable — upstream wrote directly with no undo.
+
+### New modules not present upstream
+
+`src/accounts.js`, `src/checkpoint.js`, `src/completion.js`, `src/confirm.js`,
+`src/i18n.js`, `src/token-usage.js`, and the whole `src/ui/` tree.
+
+> ⚠️ Because this fork diverged, its `main` history is unrelated to the
+> upstream history. This fork's work is published on the **`local-workbench`**
+> branch. Upstream's `src/backup.js` (a simple prompt-backup helper) is not used
+> here; checkpoints supersede it.
 
 ---
 
 ## 🚀 Quick Start
+
+> The examples below assume a global install (`deepseek-agent` / `dsa`).
+> If you installed by cloning only, replace `deepseek-agent` with
+> `node src/index.js` (run from the repo root).
 
 **1. First run — log in to DeepSeek:**
 ```bash
@@ -411,12 +531,15 @@ Contributions are very welcome — this project is in active development and the
 ### Setting up locally
 
 ```bash
-git clone https://github.com/lixinyingbyte/deepseek-browser-agen
+git clone https://github.com/lixinyingbyte/deepseek-browser-agent.git
 cd deepseek-browser-agent
+git checkout local-workbench
 npm install
 npx playwright install chromium
 node src/index.js --interactive
 ```
+
+See [CONTRIBUTING.md](./CONTRIBUTING.md) and [docs/DEVELOPMENT.md](./docs/DEVELOPMENT.md) for conventions.
 
 ### Areas that need work
 
@@ -460,7 +583,7 @@ MIT — see [LICENSE](./LICENSE) for details.
 
 <div align="center">
 
-**Built with None · Powered by DeepSeek · Free forever**
+**Built with Playwright · Powered by DeepSeek · Free forever**
 
 If this project helped you, consider giving it a ⭐ on GitHub!
 

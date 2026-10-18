@@ -11,10 +11,15 @@
 ## Setup
 
 ```bash
-git clone https://github.com/Omar-Azam/deepseek-browser-agent.git
+git clone https://github.com/lixinyingbyte/deepseek-browser-agent.git
 cd deepseek-browser-agent
+git checkout local-workbench     # this fork's work
 npm install
 ```
+
+> This is a modified fork of [`Omar-Azam/forge-agent`](https://github.com/Omar-Azam/forge-agent).
+> See the [What's Different From Upstream](../README.md#-whats-different-from-upstream)
+> section of the README for how it diverges.
 
 `npm install` triggers `src/postinstall.js`, which runs `playwright install chromium`.
 Skip it with `CI=1` or `SKIP_PLAYWRIGHT_INSTALL=1` if needed.
